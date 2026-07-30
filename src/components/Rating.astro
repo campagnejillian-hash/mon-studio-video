@@ -1,0 +1,18 @@
+---
+/** Affiche une note /10 sous forme d'étoiles (converties /5) + score chiffré. */
+interface Props {
+  note: number; // sur 10
+  showScore?: boolean;
+}
+const { note, showScore = true } = Astro.props;
+const sur5 = note / 2;
+const pleines = Math.floor(sur5);
+const demi = sur5 - pleines >= 0.5;
+const vides = 5 - pleines - (demi ? 1 : 0);
+---
+<span class="rating" aria-label={`Note : ${note} sur 10`}>
+  <span class="stars" aria-hidden="true">{
+    '★'.repeat(pleines) + (demi ? '⯪' : '') + '☆'.repeat(vides)
+  }</span>
+  {showScore && <span class="score">{note.toFixed(1)}<span class="text-mute small">/10</span></span>}
+</span>

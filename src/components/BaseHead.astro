@@ -1,0 +1,91 @@
+---
+/**
+ * BaseHead — tout le <head> SEO : title/meta uniques, canonical, Open Graph,
+ * Twitter cards, hreflang, favicon, préchargements. Un seul endroit à maintenir.
+ */
+import { SITE } from '../consts';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Image OG relative (ou absolue) ; fallback sur l'image par défaut du site. */
+  image?: string;
+  /** Type Open Graph. */
+  ogType?: 'website' | 'article';
+  /** Empêche l'indexation (pages utilitaires). */
+  noindex?: boolean;
+  /** Dates ISO pour les articles. */
+  publishedTime?: Date;
+  modifiedTime?: Date;
+}
+
+const {
+  title,
+  description,
+  image = SITE.defaultOgImage,
+  ogType = 'website',
+  noindex = false,
+  publishedTime,
+  modifiedTime,
+} = Astro.props;
+
+// URL canonique propre : on retire l'extension .html et /index générés par le
+// build `format: 'file'`, ainsi que le slash final. Netlify sert ces fichiers
+// sur des URLs propres (/meilleur-ipl-peau-mate) → canonical cohérent avec le sitemap.
+const cleanPath = Astro.url.pathname
+  .replace(/index\.html$/, '')
+  .replace(/\.html$/, '')
+  .replace(/\/$/, '');
+const canonical = new URL(cleanPath || '/', Astro.site).href.replace(/\/$/, '');
+const ogImage = new URL(image, Astro.site).href;
+const titleTag = title === SITE.title ? title : `${title} | ${SITE.name}`;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+
+<!-- Titre & description uniques -->
+<title>{titleTag}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+
+{
+  noindex ? (
+    <meta name="robots" content="noindex, nofollow" />
+  ) : (
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+  )
+}
+
+<!-- Favicon (SVG léger, aucun requête bloquante) -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" href="/favicon.svg" />
+<meta name="theme-color" content="#0f766e" />
+
+<!-- Open Graph -->
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:locale" content={SITE.locale} />
+{publishedTime && (
+  <meta property="article:published_time" content={publishedTime.toISOString()} />
+)}
+{modifiedTime && (
+  <meta property="article:modified_time" content={modifiedTime.toISOString()} />
+)}
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+{SITE.twitter && <meta name="twitter:site" content={`@${SITE.twitter}`} />}
+
+<!-- Langue -->
+<link rel="alternate" hreflang={SITE.lang} href={canonical} />
+<link rel="sitemap" href="/sitemap-index.xml" />

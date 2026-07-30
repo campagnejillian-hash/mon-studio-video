@@ -1,0 +1,175 @@
+---
+/** Rendu d'une fiche produit : /produits/smooth-x-infinity */
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Rating from '../../components/Rating.astro';
+import ProsCons from '../../components/ProsCons.astro';
+import CtaButton from '../../components/CtaButton.astro';
+import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
+import JsonLd from '../../components/JsonLd.astro';
+import { SITE } from '../../consts';
+import { buildProductSchema, buildBreadcrumbSchema } from '../../lib/schema';
+
+export async function getStaticPaths() {
+  const produits = await getCollection('produits', ({ data }) => !data.brouillon);
+  return produits.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'produits'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await entry.render();
+
+const site = Astro.site!;
+const canonical = new URL(`produits/${entry.slug}`, site).href;
+const ogImage = new URL(d.image.src, site).href;
+
+const alimLabel: Record<string, string> = {
+  filaire: 'Filaire',
+  'sans-fil': 'Sans fil',
+  'filaire-et-sans-fil': 'Filaire et sans fil',
+};
+
+const crumbs = [
+  { name: 'Accueil', href: '/' },
+  { name: 'Comparatif 2026', href: '/meilleur-epilateur-ipl-2026' },
+  { name: d.nom },
+];
+
+const specs: { label: string; value: string }[] = [
+  { label: 'Marque', value: d.marque },
+  { label: 'Technologie', value: d.technologie },
+  { label: 'Nombre de flashs', value: d.nbFlashs.toLocaleString('fr-FR') },
+  { label: 'Capteur de teint', value: d.capteurDePeau ? 'Oui' : 'Non' },
+  { label: 'Alimentation', value: alimLabel[d.alimentation] },
+  { label: 'Compatibilité peau', value: d.compatibilitePeau },
+  { label: 'Compatibilité poil', value: d.compatibilitePoil },
+  { label: 'Zones traitables', value: d.zones.join(', ') },
+];
+
+const schemas = [
+  buildProductSchema({ produit: d, url: canonical, imageUrl: ogImage }),
+  buildBreadcrumbSchema(
+    crumbs.map((c) => ({
+      name: c.name,
+      url: new URL(c.href ?? `produits/${entry.slug}`, site).href,
+    })),
+  ),
+];
+---
+<BaseLayout
+  title={d.seoTitle ?? `Avis ${d.nom} : test complet`}
+  description={d.seoDescription ?? d.resume}
+  image={d.image.src}
+  ogType="article"
+  publishedTime={d.datePublication}
+  modifiedTime={d.dateMaj ?? d.datePublication}
+>
+  <JsonLd slot="head" schema={schemas} />
+
+  <div class="container fiche-wrap">
+    <Breadcrumbs crumbs={crumbs} />
+
+    <div class="fiche-hero">
+      <div class="fiche-image card">
+        <Image
+          src={d.image}
+          alt={d.imageAlt}
+          width={520}
+          height={520}
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
+      </div>
+      <div class="fiche-intro">
+        <p class="text-mute small brand-line">{d.marque}</p>
+        <h1>{d.nom}</h1>
+        <div class="fiche-rating">
+          <Rating note={d.note} />
+        </div>
+        <p class="lede text-soft">{d.resume}</p>
+        <div class="verdict-box">
+          <strong>Notre verdict :</strong> {d.verdict}
+        </div>
+        <CtaButton href={d.affiliateUrl} block />
+        <p class="small text-mute price-note">
+          Prix affiché directement sur Amazon (mis à jour en temps réel).
+        </p>
+      </div>
+    </div>
+
+    <AffiliateDisclosure variant="compact" />
+
+    <div class="fiche-body prose">
+      <section aria-label="Caractéristiques">
+        <h2>Caractéristiques principales</h2>
+        <div class="table-wrap">
+          <table class="compare specs">
+            <tbody>
+              {specs.map((s) => (
+                <tr>
+                  <th scope="row">{s.label}</th>
+                  <td>{s.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <ProsCons pros={d.pointsForts} cons={d.pointsFaibles} />
+
+      <Content />
+
+      <div class="cta-final card">
+        <div>
+          <h2 class="mt-0">{d.nom}</h2>
+          <Rating note={d.note} />
+        </div>
+        <CtaButton href={d.affiliateUrl} />
+      </div>
+    </div>
+
+    <AffiliateDisclosure />
+  </div>
+</BaseLayout>
+
+<style>
+  .fiche-wrap { padding-top: 1.5rem; }
+  .fiche-hero {
+    display: grid; gap: 1.75rem; margin-bottom: 1.5rem;
+  }
+  @media (min-width: 800px) {
+    .fiche-hero { grid-template-columns: 0.9fr 1.1fr; align-items: start; }
+  }
+  .fiche-image {
+    background: var(--c-bg-soft); padding: 1.5rem; display: grid; place-items: center;
+    aspect-ratio: 1 / 1;
+  }
+  .fiche-image img { width: auto; max-height: 100%; object-fit: contain; mix-blend-mode: multiply; }
+  @media (prefers-color-scheme: dark) { .fiche-image img { mix-blend-mode: normal; } }
+  .brand-line { text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 0.25rem; }
+  .fiche-rating { margin: 0.5rem 0 1rem; font-size: 1.15rem; }
+  .lede { font-size: 1.1rem; }
+  .verdict-box {
+    background: var(--c-accent-soft); color: var(--c-accent-hover);
+    border-radius: var(--radius); padding: 0.9rem 1.1rem; margin: 1rem 0 1.25rem;
+    line-height: 1.55;
+  }
+  .price-note { margin-top: 0.6rem; }
+  .fiche-body { margin-top: 2rem; }
+  .specs th { width: 40%; background: var(--c-bg-soft); }
+  .cta-final {
+    display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
+    justify-content: space-between; padding: 1.5rem; margin-top: 2.5rem;
+    background: var(--c-bg-soft);
+  }
+</style>

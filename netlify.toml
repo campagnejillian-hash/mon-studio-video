@@ -1,0 +1,37 @@
+# Configuration de déploiement Netlify (offre gratuite).
+# Astro génère un site 100 % statique dans dist/ : hébergement gratuit, CDN mondial.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # Définissez SITE_URL dans l'interface Netlify (Site settings → Environment
+  # variables) avec votre domaine final, ex : https://mon-comparateur-ipl.fr
+
+# En-têtes de sécurité + performance (bon pour la confiance et Lighthouse).
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+# Cache long pour les assets à hash (immutables) : meilleur LCP au retour.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Page 404 personnalisée (Astro la génère dans dist/404.html).
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404

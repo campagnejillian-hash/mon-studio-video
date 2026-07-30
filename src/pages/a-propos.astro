@@ -1,0 +1,103 @@
+---
+/** À propos / méthodologie — crucial pour l'E-E-A-T et la confiance Google. */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { SITE } from '../consts';
+
+const site = Astro.site!;
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: `À propos de ${SITE.name}`,
+  url: new URL('a-propos', site).href,
+  publisher: {
+    '@type': 'Organization',
+    name: SITE.name,
+    url: site.href.replace(/\/$/, ''),
+  },
+};
+---
+<BaseLayout
+  title="À propos & méthodologie"
+  description="Qui sommes-nous, comment nous testons et classons les épilateurs à lumière pulsée, et comment nous finançons ce site en toute transparence."
+>
+  <JsonLd slot="head" schema={schema} />
+  <div class="container prose page">
+    <Breadcrumbs crumbs={[{ name: 'Accueil', href: '/' }, { name: 'À propos & méthodologie' }]} />
+    <h1>À propos &amp; méthodologie</h1>
+
+    <p class="lede text-soft">
+      {SITE.name} est un site éditorial indépendant dédié à l'épilation à lumière
+      pulsée à domicile. Notre mission : vous aider à choisir l'appareil réellement
+      adapté à votre peau, vos poils et votre budget.
+    </p>
+
+    <h2>Qui sommes-nous ?</h2>
+    <p>
+      Notre équipe réunit des rédacteurs spécialisés dans les appareils de soin et
+      de beauté. Nous n'appartenons à aucun fabricant et ne vendons aucun produit.
+      Notre seul objectif est de produire des comparatifs utiles et honnêtes.
+    </p>
+
+    <h2>Comment nous testons et classons</h2>
+    <p>
+      Chaque appareil est évalué selon quatre familles de critères, pondérées pour
+      refléter ce qui compte vraiment à l'usage :
+    </p>
+    <ul>
+      <li><strong>Sécurité (35 %)</strong> — présence et fiabilité du capteur de teint, plage de phototypes couverte, niveaux d'intensité.</li>
+      <li><strong>Efficacité (30 %)</strong> — puissance, compatibilité avec les types de poils, résultats observés dans la durée.</li>
+      <li><strong>Praticité (20 %)</strong> — taille de la fenêtre de flash, alimentation filaire/sans-fil, autonomie, ergonomie.</li>
+      <li><strong>Confort (15 %)</strong> — refroidissement, sensation à chaque flash, facilité de prise en main.</li>
+    </ul>
+    <p>
+      La note finale sur 10 synthétise ces critères. Nos classements sont
+      <strong>strictement éditoriaux</strong> : ils ne sont jamais influencés par
+      les liens d'affiliation.
+    </p>
+
+    <h2>Notre indépendance et notre financement</h2>
+    <p>
+      Ce site est gratuit. Pour couvrir nos frais, nous utilisons des
+      <strong>liens affiliés</strong> : lorsqu'un lien renvoie vers Amazon et que
+      vous effectuez un achat, nous pouvons percevoir une petite commission,
+      <em>sans surcoût pour vous</em>. En tant que Partenaire Amazon, nous
+      réalisons un bénéfice sur les achats remplissant les conditions requises.
+    </p>
+    <p>
+      Cette rémunération ne modifie <strong>jamais</strong> nos évaluations. Un
+      produit mal noté le reste, qu'il génère ou non des commissions. Tous nos
+      liens affiliés sont signalés en <code>rel="nofollow sponsored"</code> et une
+      divulgation est présente sur chaque page.
+    </p>
+
+    <h2>Une précision importante sur les prix</h2>
+    <p>
+      Nous n'affichons jamais de prix figé dans nos contenus. Les tarifs évoluent
+      constamment : le seul prix fiable est celui affiché en temps réel sur la page
+      du produit. Nos boutons « Voir le prix sur Amazon » vous y renvoient
+      directement.
+    </p>
+
+    <h2>Avertissement</h2>
+    <p class="small text-mute">
+      Les informations de ce site sont fournies à titre indicatif et ne
+      constituent pas un avis médical. L'épilation à lumière pulsée présente des
+      contre-indications. En cas de doute (grossesse, traitement médical, lésion
+      cutanée, phototype foncé), demandez l'avis d'un professionnel de santé et
+      référez-vous à la notice du fabricant.
+    </p>
+
+    <hr />
+    <p>
+      Une question ou une correction à nous signaler ? Consultez nos
+      <a href="/mentions-legales">mentions légales</a> pour nous contacter.
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .page { padding-top: 1.5rem; padding-bottom: 2rem; }
+  .lede { font-size: 1.15rem; }
+</style>

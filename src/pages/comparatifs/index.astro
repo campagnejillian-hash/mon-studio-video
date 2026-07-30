@@ -1,0 +1,88 @@
+---
+/** Index de tous les guides (pilier + satellites) + fiches produits. */
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
+
+const comparatifs = (
+  await getCollection('comparatifs', ({ data }) => !data.brouillon)
+).sort((a, b) => {
+  if (a.data.type !== b.data.type) return a.data.type === 'pilier' ? -1 : 1;
+  return +(b.data.dateMaj ?? b.data.datePublication) - +(a.data.dateMaj ?? a.data.datePublication);
+});
+
+const produits = (
+  await getCollection('produits', ({ data }) => !data.brouillon)
+).sort((a, b) => b.data.note - a.data.note);
+
+const angleLabel: Record<string, string> = {
+  'type-de-peau': 'Par type de peau',
+  'type-de-poil': 'Par type de poil',
+  zone: 'Par zone',
+  versus: 'Face à face',
+  avis: 'Avis détaillé',
+  general: 'Guide de référence',
+};
+---
+<BaseLayout
+  title="Tous nos guides et comparatifs d'épilateurs IPL"
+  description="Retrouvez tous nos guides d'achat, comparatifs et avis sur les épilateurs à lumière pulsée : par type de peau, par zone et face-à-face."
+>
+  <div class="container list-wrap">
+    <Breadcrumbs crumbs={[{ name: 'Accueil', href: '/' }, { name: 'Tous les guides' }]} />
+    <h1>Tous nos guides &amp; comparatifs</h1>
+    <p class="lede text-soft">
+      Nos guides d'achat et comparatifs pour choisir votre épilateur à lumière
+      pulsée, ainsi que les fiches détaillées de chaque modèle testé.
+    </p>
+
+    <AffiliateDisclosure variant="compact" />
+
+    <section class="list-section">
+      <h2>Guides &amp; comparatifs</h2>
+      <ul class="link-list">
+        {comparatifs.map((c) => (
+          <li>
+            <a href={`/${c.slug}`}>
+              <span class="badge">{angleLabel[c.data.angle]}</span>
+              <span class="ll-title">{c.data.h1}</span>
+              <span class="ll-desc text-soft small">{c.data.description}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="list-section">
+      <h2>Toutes nos fiches produits</h2>
+      <ul class="link-list">
+        {produits.map((p) => (
+          <li>
+            <a href={`/produits/${p.slug}`}>
+              <span class="badge">Note {p.data.note.toFixed(1)}/10</span>
+              <span class="ll-title">{p.data.nom}</span>
+              <span class="ll-desc text-soft small">{p.data.resume}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .list-wrap { padding-top: 1.5rem; max-width: 60rem; }
+  .lede { font-size: 1.1rem; }
+  .list-section { margin: 2.5rem 0; }
+  .link-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+  .link-list li { margin: 0; }
+  .link-list a {
+    display: grid; gap: 0.3rem; padding: 1rem 1.1rem;
+    border: 1px solid var(--c-border); border-radius: var(--radius);
+    background: var(--c-bg); text-decoration: none;
+  }
+  .link-list a:hover { border-color: var(--c-accent); background: var(--c-bg-soft); }
+  .link-list .badge { justify-self: start; }
+  .ll-title { font-weight: 700; color: var(--c-text); }
+</style>

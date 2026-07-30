@@ -1,0 +1,62 @@
+---
+/**
+ * Tableau comparatif synthétique. Scrollable horizontalement sur mobile.
+ * Reçoit une liste de fiches produits (ordre = classement).
+ */
+import type { CollectionEntry } from 'astro:content';
+import Rating from './Rating.astro';
+import CtaButton from './CtaButton.astro';
+
+interface Props {
+  produits: CollectionEntry<'produits'>[];
+}
+const { produits } = Astro.props;
+
+const alim: Record<string, string> = {
+  filaire: 'Filaire',
+  'sans-fil': 'Sans fil',
+  'filaire-et-sans-fil': 'Filaire + sans fil',
+};
+---
+<div class="table-wrap" role="region" aria-label="Tableau comparatif des épilateurs IPL" tabindex="0">
+  <table class="compare">
+    <thead>
+      <tr>
+        <th scope="col">Modèle</th>
+        <th scope="col">Note</th>
+        <th scope="col">Technologie</th>
+        <th scope="col">Flashs</th>
+        <th scope="col">Capteur de peau</th>
+        <th scope="col">Alimentation</th>
+        <th scope="col">Idéal pour</th>
+        <th scope="col"><span class="sr-only">Lien d'achat</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {produits.map((p) => {
+        const d = p.data;
+        return (
+          <tr>
+            <td>
+              <a href={`/produits/${p.slug}`} class="cell-name">{d.nom}</a>
+              <span class="block text-mute small">{d.marque}</span>
+            </td>
+            <td><Rating note={d.note} /></td>
+            <td>{d.technologie}</td>
+            <td>{d.nbFlashs.toLocaleString('fr-FR')}</td>
+            <td>{d.capteurDePeau ? '✅ Oui' : '—'}</td>
+            <td>{alim[d.alimentation]}</td>
+            <td class="small">{d.compatibilitePeau}</td>
+            <td><CtaButton href={d.affiliateUrl} label="Voir le prix" /></td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .cell-name { text-decoration: none; font-weight: 700; color: var(--c-text); }
+  .cell-name:hover { color: var(--c-accent); }
+  .block { display: block; }
+</style>
