@@ -1,0 +1,58 @@
+---
+/** Pied de page : liens légaux, divulgation courte, copyright. */
+import { SITE, FOOTER_LINKS } from '../consts';
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <p class="foot-brand">{SITE.name}</p>
+        <p class="small text-mute">
+          Comparatif indépendant d'appareils d'épilation à lumière pulsée.
+          Nos tests et nos avis sont éditoriaux ; nous ne vendons aucun produit.
+        </p>
+      </div>
+      <nav aria-label="Liens de pied de page">
+        <ul>
+          {FOOTER_LINKS.map((l) => (
+            <li><a href={l.href}>{l.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+    <p class="small text-mute disclosure-line">
+      En tant que Partenaire Amazon, ce site réalise un bénéfice sur les achats
+      remplissant les conditions requises. Les liens vers Amazon sont des liens
+      affiliés et n'entraînent aucun surcoût pour vous.
+    </p>
+    <p class="small text-mute">© {year} {SITE.name}. Tous droits réservés.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--c-border);
+    background: var(--c-bg-soft);
+    margin-top: 4rem;
+    padding: 2.5rem 0 2rem;
+  }
+  .footer-grid {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  @media (min-width: 640px) {
+    .footer-grid { grid-template-columns: 2fr 1fr; }
+  }
+  .foot-brand { font-weight: 800; margin-bottom: 0.4rem; }
+  .site-footer ul { list-style: none; margin: 0; padding: 0; }
+  .site-footer li { margin-bottom: 0.5rem; }
+  .site-footer a { color: var(--c-text-soft); text-decoration: none; }
+  .site-footer a:hover { color: var(--c-accent); text-decoration: underline; }
+  .disclosure-line {
+    border-top: 1px solid var(--c-border);
+    padding-top: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+</style>

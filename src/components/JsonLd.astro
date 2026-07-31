@@ -1,0 +1,20 @@
+---
+/**
+ * Injecte un ou plusieurs blocs de données structurées JSON-LD.
+ * On sérialise proprement (les objets `null` sont ignorés).
+ */
+interface Props {
+  schema: Record<string, unknown> | Array<Record<string, unknown> | null>;
+}
+const { schema } = Astro.props;
+const blocks = (Array.isArray(schema) ? schema : [schema]).filter(Boolean);
+---
+{
+  blocks.map((block) => (
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(block)}
+      is:inline
+    />
+  ))
+}

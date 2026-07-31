@@ -1,0 +1,60 @@
+---
+/**
+ * FAQ accessible (details/summary natif = zéro JS, bon pour CWV).
+ * Le JSON-LD FAQPage est injecté séparément via buildFaqSchema.
+ */
+interface FaqItem {
+  question: string;
+  reponse: string;
+}
+interface Props {
+  faq: FaqItem[];
+  title?: string;
+}
+const { faq, title = 'Questions fréquentes' } = Astro.props;
+---
+{faq.length > 0 && (
+  <section class="faq" aria-labelledby="faq-title">
+    <h2 id="faq-title">{title}</h2>
+    <div class="faq-list">
+      {faq.map((item) => (
+        <details class="faq-item">
+          <summary><h3>{item.question}</h3></summary>
+          <div class="faq-answer"><p>{item.reponse}</p></div>
+        </details>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .faq-list { display: flex; flex-direction: column; gap: 0.6rem; }
+  .faq-item {
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    background: var(--c-bg);
+    overflow: hidden;
+  }
+  .faq-item summary {
+    cursor: pointer;
+    padding: 1rem 1.1rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary h3 { margin: 0; font-size: 1.05rem; }
+  .faq-item summary::after {
+    content: '+';
+    font-size: 1.4rem;
+    color: var(--c-accent);
+    flex: 0 0 auto;
+    line-height: 1;
+  }
+  .faq-item[open] summary::after { content: '−'; }
+  .faq-item[open] summary { border-bottom: 1px solid var(--c-border); }
+  .faq-answer { padding: 0.9rem 1.1rem 0.4rem; color: var(--c-text-soft); }
+  .faq-answer p { margin: 0 0 0.6rem; }
+</style>

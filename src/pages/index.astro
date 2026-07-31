@@ -1,0 +1,139 @@
+---
+/** Page d'accueil : hero + recherche + top produits + accès aux guides. */
+import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import SearchBar from '../components/SearchBar.astro';
+import AffiliateDisclosure from '../components/AffiliateDisclosure.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { SITE } from '../consts';
+import { buildWebsiteSchema } from '../lib/schema';
+
+const site = Astro.site!;
+
+// Page pilier
+const pilier = await getEntry('comparatifs', 'meilleur-epilateur-ipl-2026');
+const topProduits = (
+  await Promise.all((pilier?.data.produits ?? []).map((ref) => getEntry(ref)))
+).filter(Boolean) as CollectionEntry<'produits'>[];
+
+// Guides satellites
+const satellites = (
+  await getCollection('comparatifs', ({ data }) => data.type === 'satellite' && !data.brouillon)
+).sort((a, b) => +(b.data.dateMaj ?? b.data.datePublication) - +(a.data.dateMaj ?? a.data.datePublication));
+
+const angleLabel: Record<string, string> = {
+  'type-de-peau': 'Par type de peau',
+  'type-de-poil': 'Par type de poil',
+  zone: 'Par zone',
+  versus: 'Face à face',
+  avis: 'Avis détaillé',
+  general: 'Guide',
+};
+
+const schema = buildWebsiteSchema(site.href.replace(/\/$/, ''), SITE.name);
+---
+<BaseLayout title={SITE.title} description={SITE.description}>
+  <JsonLd slot="head" schema={schema} />
+
+  <section class="hero">
+    <div class="container hero-inner">
+      <span class="badge">Le banc d'essai indépendant</span>
+      <h1>Trouvez le meilleur épilateur à lumière pulsée</h1>
+      <p class="hero-sub text-soft">
+        Comparatifs, tests détaillés et conseils par type de peau, type de poil et
+        zone à traiter. Des recommandations claires, sans prix trompeur ni jargon.
+      </p>
+      <div class="hero-search">
+        <SearchBar placeholder="Ex : peau mate, visage, sans fil…" />
+      </div>
+      <div class="hero-actions">
+        <a href="/meilleur-epilateur-ipl-2026" class="btn btn-cta">Voir le comparatif 2026</a>
+        <a href="/a-propos" class="btn btn-ghost">Notre méthodologie</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <AffiliateDisclosure variant="compact" />
+
+    {topProduits.length > 0 && (
+      <section class="home-section">
+        <div class="section-head">
+          <h2>Notre top des épilateurs IPL</h2>
+          <a href="/meilleur-epilateur-ipl-2026" class="see-all">Tout le comparatif →</a>
+        </div>
+        <div class="grid grid-3">
+          {topProduits.slice(0, 3).map((p, i) => <ProductCard produit={p} rank={i + 1} />)}
+        </div>
+      </section>
+    )}
+
+    {satellites.length > 0 && (
+      <section class="home-section">
+        <div class="section-head">
+          <h2>Nos guides spécialisés</h2>
+        </div>
+        <div class="grid grid-2">
+          {satellites.map((s) => (
+            <a href={`/${s.slug}`} class="guide-card card">
+              <span class="badge">{angleLabel[s.data.angle]}</span>
+              <h3>{s.data.h1}</h3>
+              <p class="text-soft small">{s.data.description}</p>
+              <span class="guide-link">Lire le guide →</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="home-section trust">
+      <div class="grid grid-3">
+        <div class="trust-item">
+          <h3>Indépendant</h3>
+          <p class="text-soft small">Nous ne vendons aucun produit. Nos classements sont éditoriaux et ne dépendent pas des liens affiliés.</p>
+        </div>
+        <div class="trust-item">
+          <h3>Méthodique</h3>
+          <p class="text-soft small">Chaque appareil est évalué selon des critères transparents : sécurité, efficacité, praticité, confort.</p>
+        </div>
+        <div class="trust-item">
+          <h3>Transparent</h3>
+          <p class="text-soft small">Divulgation d'affiliation sur chaque page et jamais de prix figé : le tarif réel est celui d'Amazon.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .hero {
+    background:
+      radial-gradient(60% 120% at 80% -10%, var(--c-accent-soft), transparent 60%),
+      var(--c-bg-soft);
+    border-bottom: 1px solid var(--c-border);
+    padding: 3rem 0 3.25rem;
+  }
+  .hero-inner { max-width: 46rem; }
+  .hero h1 { font-size: clamp(2rem, 1.4rem + 3vw, 3rem); margin: 0.75rem 0 0.5rem; }
+  .hero-sub { font-size: 1.15rem; margin-bottom: 1.5rem; }
+  .hero-search { margin-bottom: 1.25rem; }
+  .hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .home-section { margin: 3rem 0; }
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap;
+  }
+  .section-head h2 { margin: 0; }
+  .see-all { font-weight: 600; white-space: nowrap; text-decoration: none; }
+  .see-all:hover { text-decoration: underline; }
+  .guide-card {
+    display: flex; flex-direction: column; gap: 0.5rem; padding: 1.25rem; text-decoration: none;
+    transition: border-color 0.15s ease;
+  }
+  .guide-card:hover { border-color: var(--c-accent); }
+  .guide-card h3 { margin: 0.25rem 0 0; color: var(--c-text); }
+  .guide-link { margin-top: auto; color: var(--c-accent); font-weight: 600; padding-top: 0.5rem; }
+  .trust-item { padding: 1.25rem; border: 1px solid var(--c-border); border-radius: var(--radius); background: var(--c-bg); }
+  .trust-item h3 { margin: 0 0 0.4rem; }
+</style>

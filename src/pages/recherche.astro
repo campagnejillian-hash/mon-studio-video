@@ -1,0 +1,24 @@
+---
+/** Page de recherche dédiée (indexée en noindex : outil, pas contenu). */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import SearchBar from '../components/SearchBar.astro';
+---
+<BaseLayout
+  title="Rechercher un guide ou un modèle"
+  description="Recherchez parmi nos comparatifs, guides et fiches d'épilateurs à lumière pulsée."
+  noindex={true}
+>
+  <div class="container search-page">
+    <Breadcrumbs crumbs={[{ name: 'Accueil', href: '/' }, { name: 'Recherche' }]} />
+    <h1>Rechercher</h1>
+    <p class="text-soft">
+      Filtrez instantanément parmi nos comparatifs, guides et fiches produits.
+    </p>
+    <SearchBar autofocus placeholder="Ex : peau mate, visage, sans fil, Smooth X…" />
+  </div>
+</BaseLayout>
+
+<style>
+  .search-page { padding-top: 1.5rem; max-width: 46rem; min-height: 60vh; }
+</style>

@@ -1,0 +1,33 @@
+---
+/**
+ * Divulgation d'affiliation — obligatoire et visible sur CHAQUE page.
+ * Renforce la confiance (E-E-A-T) et respecte les règles Amazon Partenaires.
+ */
+interface Props {
+  /** `compact` pour une version d'une ligne en tête de contenu. */
+  variant?: 'default' | 'compact';
+}
+const { variant = 'default' } = Astro.props;
+---
+<aside class="affiliate-disclosure" role="note" aria-label="Divulgation d'affiliation">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+    <path d="M12 8h.01M11 12h1v4h1" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  {variant === 'compact' ? (
+    <p style="margin:0">
+      <strong>Transparence :</strong> certains liens de cette page sont des liens
+      affiliés. Un achat peut nous rémunérer, sans surcoût pour vous.
+    </p>
+  ) : (
+    <p style="margin:0">
+      <strong>Divulgation d'affiliation.</strong> Cette page contient des liens
+      affiliés vers Amazon. Si vous effectuez un achat via l'un de ces liens, nous
+      pouvons percevoir une commission, <em>sans aucun coût supplémentaire pour
+      vous</em>. Cela ne change jamais notre classement : nos avis restent
+      strictement éditoriaux et indépendants.
+      <a href="/a-propos">Notre méthodologie</a>.
+    </p>
+  )}
+</aside>

@@ -1,0 +1,181 @@
+---
+/**
+ * Barre de recherche client-side (Fuse.js).
+ * - Charge l'index /search.json au premier focus (aucun coût au chargement initial).
+ * - Recherche floue instantanée dans les comparatifs et fiches produits.
+ * - Fonctionne sans rechargement ; l'URL ?q= est pré-remplie si présente.
+ */
+interface Props {
+  autofocus?: boolean;
+  placeholder?: string;
+}
+const { autofocus = false, placeholder = 'Rechercher un guide, un modèle…' } =
+  Astro.props;
+---
+<div class="search" data-search>
+  <label for="search-input" class="sr-only">Rechercher</label>
+  <div class="search-field">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+      <path d="m20 20-3.2-3.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <input
+      type="search"
+      id="search-input"
+      autocomplete="off"
+      placeholder={placeholder}
+      aria-controls="search-results"
+      aria-describedby="search-status"
+      {...(autofocus ? { autofocus: true } : {})}
+    />
+  </div>
+  <p id="search-status" class="search-status text-mute small" role="status" aria-live="polite"></p>
+  <ul id="search-results" class="search-results" role="list"></ul>
+</div>
+
+<script>
+  import Fuse from 'fuse.js';
+
+  type Item = {
+    type: string;
+    angle: string;
+    title: string;
+    description: string;
+    url: string;
+  };
+
+  const root = document.querySelector<HTMLElement>('[data-search]');
+  if (root) {
+    const input = root.querySelector<HTMLInputElement>('#search-input')!;
+    const results = root.querySelector<HTMLUListElement>('#search-results')!;
+    const status = root.querySelector<HTMLParagraphElement>('#search-status')!;
+
+    let fuse: Fuse<Item> | null = null;
+    let data: Item[] = [];
+
+    async function ensureIndex() {
+      if (fuse) return;
+      const res = await fetch('/search.json');
+      data = (await res.json()) as Item[];
+      fuse = new Fuse(data, {
+        keys: [
+          { name: 'title', weight: 0.7 },
+          { name: 'description', weight: 0.3 },
+        ],
+        threshold: 0.4,
+        ignoreLocation: true,
+        minMatchCharLength: 2,
+      });
+    }
+
+    function escapeHtml(s: string) {
+      return s.replace(/[&<>"]/g, (c) =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c] as string,
+      );
+    }
+
+    function render(items: Item[], q: string) {
+      if (!q) {
+        results.innerHTML = '';
+        status.textContent = '';
+        return;
+      }
+      if (!items.length) {
+        results.innerHTML = '';
+        status.textContent = `Aucun résultat pour « ${q} ».`;
+        return;
+      }
+      status.textContent = `${items.length} résultat${items.length > 1 ? 's' : ''}.`;
+      results.innerHTML = items
+        .slice(0, 12)
+        .map(
+          (it) => `
+        <li class="sr-item">
+          <a href="${it.url}">
+            <span class="sr-badge">${escapeHtml(it.type)}</span>
+            <span class="sr-title">${escapeHtml(it.title)}</span>
+            <span class="sr-desc">${escapeHtml(it.description)}</span>
+          </a>
+        </li>`,
+        )
+        .join('');
+    }
+
+    async function search(q: string) {
+      await ensureIndex();
+      if (!fuse) return;
+      const trimmed = q.trim();
+      if (!trimmed) return render([], '');
+      render(
+        fuse.search(trimmed).map((r) => r.item),
+        trimmed,
+      );
+    }
+
+    input.addEventListener('focus', ensureIndex, { once: true });
+    let t: number | undefined;
+    input.addEventListener('input', () => {
+      window.clearTimeout(t);
+      t = window.setTimeout(() => search(input.value), 120);
+    });
+
+    // Pré-remplissage depuis ?q=
+    const params = new URLSearchParams(location.search);
+    const q0 = params.get('q');
+    if (q0) {
+      input.value = q0;
+      search(q0);
+    }
+  }
+</script>
+
+<style>
+  .search { position: relative; }
+  .search-field {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    background: var(--c-bg);
+    padding: 0 0.9rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .search-field:focus-within { border-color: var(--c-accent); }
+  .search-field svg { color: var(--c-text-mute); flex: 0 0 auto; }
+  .search-field input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.8rem 0;
+    font-size: 1rem;
+    color: var(--c-text);
+    outline: none;
+  }
+  .search-status { margin: 0.5rem 0 0; min-height: 1.2em; }
+  .search-results { list-style: none; margin: 0.6rem 0 0; padding: 0; display: grid; gap: 0.5rem; }
+  .search-results :global(.sr-item) { margin: 0; }
+  .search-results :global(.sr-item a) {
+    display: block;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    background: var(--c-bg);
+    text-decoration: none;
+  }
+  .search-results :global(.sr-item a:hover) { border-color: var(--c-accent); background: var(--c-bg-soft); }
+  .search-results :global(.sr-badge) {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--c-accent-hover);
+    background: var(--c-accent-soft);
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    margin-bottom: 0.35rem;
+  }
+  .search-results :global(.sr-title) { display: block; font-weight: 700; color: var(--c-text); }
+  .search-results :global(.sr-desc) { display: block; font-size: 0.88rem; color: var(--c-text-soft); }
+</style>

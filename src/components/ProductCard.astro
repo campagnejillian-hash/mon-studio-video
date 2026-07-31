@@ -1,0 +1,64 @@
+---
+/** Carte produit compacte (utilisée dans les grilles de comparatifs). */
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Rating from './Rating.astro';
+import CtaButton from './CtaButton.astro';
+
+interface Props {
+  produit: CollectionEntry<'produits'>;
+  rank?: number; // position dans un classement
+}
+const { produit, rank } = Astro.props;
+const d = produit.data;
+const href = `/produits/${produit.slug}`;
+---
+<article class="card product-card">
+  {rank && <span class="badge badge-rank rank-badge">#{rank}</span>}
+  <a href={href} class="pc-image" aria-label={`Fiche complète : ${d.nom}`}>
+    <Image
+      src={d.image}
+      alt={d.imageAlt}
+      width={320}
+      height={320}
+      loading="lazy"
+      decoding="async"
+      densities={[1, 2]}
+    />
+  </a>
+  <div class="pc-body">
+    <p class="pc-brand text-mute small">{d.marque}</p>
+    <h3 class="pc-title"><a href={href}>{d.nom}</a></h3>
+    <Rating note={d.note} />
+    <p class="pc-verdict text-soft small">{d.verdict}</p>
+    <div class="pc-actions">
+      <CtaButton href={d.affiliateUrl} block />
+      <a href={href} class="btn btn-ghost cta-block">Lire la fiche complète</a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .product-card { position: relative; display: flex; flex-direction: column; overflow: hidden; }
+  .rank-badge { position: absolute; top: 0.7rem; left: 0.7rem; z-index: 2; }
+  .pc-image {
+    display: block;
+    background: var(--c-bg-soft);
+    padding: 1rem;
+    aspect-ratio: 4 / 3;
+    display: grid;
+    place-items: center;
+  }
+  .pc-image img { width: auto; max-height: 100%; object-fit: contain; mix-blend-mode: multiply; }
+  .pc-body { padding: 1rem 1.1rem 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+  .pc-brand { margin: 0; text-transform: uppercase; letter-spacing: 0.04em; }
+  .pc-title { margin: 0; font-size: 1.15rem; }
+  .pc-title a { color: var(--c-text); text-decoration: none; }
+  .pc-title a:hover { color: var(--c-accent); }
+  .pc-verdict { margin: 0.2rem 0 0.4rem; flex: 1; }
+  .pc-actions { display: flex; flex-direction: column; gap: 0.5rem; margin-top: auto; }
+  .cta-block { width: 100%; }
+  @media (prefers-color-scheme: dark) {
+    .pc-image img { mix-blend-mode: normal; }
+  }
+</style>

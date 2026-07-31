@@ -1,0 +1,31 @@
+---
+/** Page 404 personnalisée. */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SearchBar from '../components/SearchBar.astro';
+---
+<BaseLayout
+  title="Page introuvable (404)"
+  description="La page demandée n'existe pas ou a été déplacée."
+  noindex={true}
+>
+  <div class="container notfound">
+    <p class="code">404</p>
+    <h1>Cette page a disparu</h1>
+    <p class="text-soft">
+      La page que vous cherchez n'existe pas ou a été déplacée. Essayez la
+      recherche ou revenez au comparatif.
+    </p>
+    <div class="nf-search"><SearchBar /></div>
+    <div class="nf-actions">
+      <a href="/" class="btn btn-cta">Retour à l'accueil</a>
+      <a href="/meilleur-epilateur-ipl-2026" class="btn btn-ghost">Voir le comparatif</a>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .notfound { padding: 3rem 0; max-width: 40rem; text-align: center; min-height: 55vh; }
+  .code { font-size: 4rem; font-weight: 800; color: var(--c-accent); margin: 0; line-height: 1; }
+  .nf-search { margin: 1.5rem auto; text-align: left; }
+  .nf-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+</style>

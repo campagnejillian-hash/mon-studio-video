@@ -1,0 +1,156 @@
+---
+/**
+ * Rendu des comparatifs (pilier + satellites) sur des URLs propres à la racine :
+ * /meilleur-epilateur-ipl-2026, /meilleur-ipl-peau-mate, etc.
+ */
+import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ComparisonTable from '../components/ComparisonTable.astro';
+import ProductCard from '../components/ProductCard.astro';
+import AffiliateDisclosure from '../components/AffiliateDisclosure.astro';
+import Faq from '../components/Faq.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { SITE } from '../consts';
+import {
+  buildBreadcrumbSchema,
+  buildFaqSchema,
+  buildItemListSchema,
+} from '../lib/schema';
+
+export async function getStaticPaths() {
+  const comparatifs = await getCollection('comparatifs', ({ data }) => !data.brouillon);
+  return comparatifs.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'comparatifs'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await entry.render();
+
+// Résolution des produits référencés (ordre = classement).
+const produits = (
+  await Promise.all(d.produits.map((ref) => getEntry(ref)))
+).filter(Boolean) as CollectionEntry<'produits'>[];
+
+const site = Astro.site!;
+const canonical = new URL(entry.slug, site).href;
+
+// Fil d'Ariane
+const crumbs = [
+  { name: 'Accueil', href: '/' },
+  ...(d.type === 'satellite'
+    ? [{ name: 'Comparatif 2026', href: '/meilleur-epilateur-ipl-2026' }]
+    : []),
+  { name: d.h1 },
+];
+
+// Données structurées
+const schemas = [
+  buildBreadcrumbSchema(
+    crumbs.map((c) => ({ name: c.name, url: new URL(c.href ?? entry.slug, site).href })),
+  ),
+  produits.length
+    ? buildItemListSchema({
+        name: d.h1,
+        url: canonical,
+        produits: produits.map((p) => ({
+          nom: p.data.nom,
+          url: new URL(`produits/${p.slug}`, site).href,
+        })),
+      })
+    : null,
+  buildFaqSchema(d.faq),
+];
+---
+<BaseLayout
+  title={d.title}
+  description={d.description}
+  image={d.ogImage}
+  ogType="article"
+  publishedTime={d.datePublication}
+  modifiedTime={d.dateMaj ?? d.datePublication}
+>
+  <JsonLd slot="head" schema={schemas} />
+
+  <div class="container article-wrap">
+    <Breadcrumbs crumbs={crumbs} />
+
+    <header class="article-head">
+      {d.type === 'pilier' && <span class="badge">Guide de référence</span>}
+      <h1>{d.h1}</h1>
+      <p class="lede text-soft">{d.resume}</p>
+      <p class="small text-mute meta">
+        Mis à jour le{' '}
+        <time datetime={(d.dateMaj ?? d.datePublication).toISOString()}>
+          {(d.dateMaj ?? d.datePublication).toLocaleDateString('fr-FR', {
+            year: 'numeric', month: 'long', day: 'numeric',
+          })}
+        </time>
+        {' · '}par {SITE.author}
+      </p>
+    </header>
+
+    <AffiliateDisclosure variant="compact" />
+
+    {produits.length > 0 && (
+      <section aria-label="Tableau comparatif" class="section">
+        <h2>Le tableau comparatif</h2>
+        <ComparisonTable produits={produits} />
+      </section>
+    )}
+
+    <article class="prose article-body">
+      <Content />
+    </article>
+
+    {produits.length > 0 && (
+      <section class="section" aria-label="Fiches produits">
+        <h2>Les modèles en détail</h2>
+        <div class="grid grid-2">
+          {produits.map((p, i) => <ProductCard produit={p} rank={i + 1} />)}
+        </div>
+      </section>
+    )}
+
+    <section class="section">
+      <Faq faq={d.faq} />
+    </section>
+
+    <aside class="pilier-cta card">
+      <div>
+        <h2 class="mt-0">Poursuivez votre recherche</h2>
+        <p class="text-soft">
+          Retrouvez tous nos guides ou utilisez la recherche pour trouver le
+          modèle adapté à votre besoin.
+        </p>
+      </div>
+      <div class="pilier-cta-actions">
+        <a href="/meilleur-epilateur-ipl-2026" class="btn btn-ghost">Comparatif 2026</a>
+        <a href="/recherche" class="btn btn-ghost">Rechercher</a>
+      </div>
+    </aside>
+
+    <AffiliateDisclosure />
+  </div>
+</BaseLayout>
+
+<style>
+  .article-wrap { padding-top: 1.5rem; padding-bottom: 1rem; }
+  .article-head { max-width: var(--maxw-prose); margin-inline: auto; }
+  .lede { font-size: 1.15rem; margin-top: 0.5rem; }
+  .meta { margin-top: 0.75rem; }
+  .section { margin: 2.75rem 0; }
+  .article-body { margin-block: 2.5rem; }
+  .pilier-cta {
+    display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
+    justify-content: space-between; padding: 1.5rem; margin: 2.5rem 0;
+    background: var(--c-bg-soft);
+  }
+  .pilier-cta-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+</style>

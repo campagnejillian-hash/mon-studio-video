@@ -1,0 +1,74 @@
+---
+/** Mentions légales — modèle à compléter avec vos informations réelles. */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { SITE } from '../consts';
+---
+<BaseLayout
+  title="Mentions légales"
+  description="Mentions légales, éditeur, hébergement et politique de confidentialité du site."
+  noindex={true}
+>
+  <div class="container prose page">
+    <Breadcrumbs crumbs={[{ name: 'Accueil', href: '/' }, { name: 'Mentions légales' }]} />
+    <h1>Mentions légales</h1>
+
+    <p class="text-mute small">
+      ⚠️ Modèle à personnaliser : remplacez les champs entre crochets par vos
+      informations réelles avant la mise en ligne.
+    </p>
+
+    <h2>Éditeur du site</h2>
+    <p>
+      Le site {SITE.name} est édité par [Nom / Raison sociale].<br />
+      Statut : [Auto-entrepreneur / SAS / …]<br />
+      SIRET : [Numéro SIRET]<br />
+      Adresse : [Adresse postale]<br />
+      Contact : [adresse e-mail de contact]<br />
+      Directeur de la publication : [Nom du responsable].
+    </p>
+
+    <h2>Hébergement</h2>
+    <p>
+      Ce site est hébergé par Netlify, Inc.<br />
+      512 2nd Street, Suite 200, San Francisco, CA 94107, États-Unis.<br />
+      <a href="https://www.netlify.com" rel="nofollow noopener" target="_blank">www.netlify.com</a>
+    </p>
+
+    <h2>Propriété intellectuelle</h2>
+    <p>
+      L'ensemble des contenus (textes, visuels, mise en page) présents sur ce site
+      est protégé par le droit d'auteur. Toute reproduction sans autorisation
+      préalable est interdite. Les marques et visuels de produits appartiennent à
+      leurs propriétaires respectifs.
+    </p>
+
+    <h2>Liens d'affiliation</h2>
+    <p>
+      Ce site participe au Programme Partenaires d'Amazon EU, un programme
+      d'affiliation conçu pour permettre à des sites de percevoir une rémunération
+      grâce à la création de liens vers Amazon.fr. Les liens concernés sont
+      signalés et n'entraînent aucun surcoût pour l'utilisateur. Voir notre
+      <a href="/a-propos">page méthodologie</a>.
+    </p>
+
+    <h2>Données personnelles &amp; cookies</h2>
+    <p>
+      Ce site statique ne collecte pas de données personnelles via des formulaires.
+      Si vous ajoutez un outil de mesure d'audience ou de la publicité, complétez
+      cette section conformément au RGPD (finalités, base légale, durée de
+      conservation, droits des personnes, gestion du consentement).
+    </p>
+
+    <h2>Responsabilité</h2>
+    <p>
+      Les informations publiées le sont à titre indicatif et ne sauraient engager
+      la responsabilité de l'éditeur. Elles ne remplacent pas l'avis d'un
+      professionnel de santé ni la notice des fabricants.
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .page { padding-top: 1.5rem; padding-bottom: 2rem; }
+</style>
