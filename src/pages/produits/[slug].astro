@@ -46,7 +46,7 @@ const crumbs = [
 const specs: { label: string; value: string }[] = [
   { label: 'Marque', value: d.marque },
   { label: 'Technologie', value: d.technologie },
-  { label: 'Nombre de flashs', value: d.nbFlashs.toLocaleString('fr-FR') },
+  { label: 'Nombre de flashs', value: d.nbFlashs ? d.nbFlashs.toLocaleString('fr-FR') : 'Non communiqué' },
   { label: 'Capteur de teint', value: d.capteurDePeau ? 'Oui' : 'Non' },
   { label: 'Alimentation', value: alimLabel[d.alimentation] },
   { label: 'Compatibilité peau', value: d.compatibilitePeau },

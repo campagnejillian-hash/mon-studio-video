@@ -23,9 +23,13 @@ interface ProductSchemaOptions {
 }
 
 /**
- * Product + Review + AggregateRating.
- * `AggregateRating` s'appuie sur notre note éditoriale : reviewCount = 1
- * (une évaluation, celle de la rédaction). Adaptez si vous agrégez des avis.
+ * Product + Review (avis ÉDITORIAL du site, un seul auteur).
+ *
+ * Choix de conformité : on n'émet PAS d'`AggregateRating`. Ce type suppose
+ * l'agrégation de plusieurs avis d'utilisateurs ; l'utiliser pour une note
+ * maison reviendrait à afficher de fausses notes agrégées. On publie donc
+ * uniquement un `Review` unique, signé par la rédaction, avec sa note — ce qui
+ * est honnête et conforme aux règles de Google sur les avis auto-publiés.
  */
 export function buildProductSchema({ produit, url, imageUrl }: ProductSchemaOptions) {
   const rating = noteSur5(produit.note);
@@ -54,14 +58,6 @@ export function buildProductSchema({ produit, url, imageUrl }: ProductSchemaOpti
         name: 'La rédaction',
       },
       reviewBody: produit.verdict,
-    },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: rating,
-      bestRating: 5,
-      worstRating: 0,
-      reviewCount: 1,
-      ratingCount: 1,
     },
   };
 }
