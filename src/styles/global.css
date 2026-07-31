@@ -309,9 +309,24 @@ table.compare td:first-child {
   gap: 0.4rem;
   font-variant-numeric: tabular-nums;
 }
+/* Étoiles : base grise + remplissage doré partiel (largeur en %). */
 .rating .stars {
-  color: var(--c-star);
-  letter-spacing: 1px;
+  --pct: 0%;
+  position: relative;
+  display: inline-block;
+  color: var(--c-text-mute); /* étoiles vides */
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+.rating .stars::before {
+  content: '★★★★★';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--pct);
+  overflow: hidden;
+  color: var(--c-star); /* étoiles pleines */
+  letter-spacing: 2px;
 }
 .rating .score {
   font-weight: 700;
