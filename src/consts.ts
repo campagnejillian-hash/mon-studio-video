@@ -8,10 +8,10 @@ export const SITE = {
   /** Nom court affiché dans le header et les données structurées. */
   name: 'Comparateur IPL',
   /** Nom complet / baseline pour les balises title et Open Graph. */
-  title: 'Comparateur IPL — Le banc d’essai des épilateurs à lumière pulsée',
+  title: 'Comparateur IPL — Le guide d’achat des épilateurs à lumière pulsée',
   /** Description par défaut (fallback meta description). */
   description:
-    'Comparatif indépendant des meilleurs épilateurs à lumière pulsée (IPL). Tests, fiches détaillées et conseils par type de peau et de poil.',
+    'Comparatif indépendant des épilateurs à lumière pulsée (IPL) : analyse des caractéristiques officielles et des avis d’utilisateurs, par type de peau et de poil.',
   /** Langue principale (attribut lang + balise og:locale). */
   lang: 'fr',
   locale: 'fr_FR',

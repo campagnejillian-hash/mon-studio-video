@@ -20,7 +20,7 @@ const schema = {
 ---
 <BaseLayout
   title="À propos & méthodologie"
-  description="Qui sommes-nous, comment nous testons et classons les épilateurs à lumière pulsée, et comment nous finançons ce site en toute transparence."
+  description="Qui sommes-nous, comment nous comparons et classons les épilateurs à lumière pulsée à partir des caractéristiques et des avis d'utilisateurs, et comment nous finançons ce site en toute transparence."
 >
   <JsonLd slot="head" schema={schema} />
   <div class="container prose page">
@@ -28,33 +28,45 @@ const schema = {
     <h1>À propos &amp; méthodologie</h1>
 
     <p class="lede text-soft">
-      {SITE.name} est un site éditorial indépendant dédié à l'épilation à lumière
-      pulsée à domicile. Notre mission : vous aider à choisir l'appareil réellement
-      adapté à votre peau, vos poils et votre budget.
+      {SITE.name} est un site de comparaison indépendant dédié à l'épilation à
+      lumière pulsée à domicile. Notre mission : vous faire gagner du temps en
+      rassemblant, au même endroit, les informations utiles pour choisir un
+      appareil adapté à votre peau, vos poils et votre budget.
     </p>
 
     <h2>Qui sommes-nous ?</h2>
     <p>
-      Notre équipe réunit des rédacteurs spécialisés dans les appareils de soin et
-      de beauté. Nous n'appartenons à aucun fabricant et ne vendons aucun produit.
-      Notre seul objectif est de produire des comparatifs utiles et honnêtes.
+      Nous sommes une petite équipe éditoriale indépendante. Nous n'appartenons à
+      aucun fabricant et ne vendons aucun produit. Nous ne sommes pas des
+      professionnels de la dermatologie et nous n'apportons pas d'expertise
+      technique personnelle : notre travail est un travail de
+      <strong>synthèse et de comparaison</strong>.
     </p>
 
-    <h2>Comment nous testons et classons</h2>
+    <h2>Comment nous comparons et classons</h2>
     <p>
-      Chaque appareil est évalué selon quatre familles de critères, pondérées pour
-      refléter ce qui compte vraiment à l'usage :
+      Soyons transparents : <strong>nous ne testons pas nous-mêmes les
+      appareils</strong> et nous ne réalisons aucun essai en laboratoire. Nos
+      comparatifs reposent sur deux sources d'information publiques :
     </p>
     <ul>
-      <li><strong>Sécurité (35 %)</strong> — présence et fiabilité du capteur de teint, plage de phototypes couverte, niveaux d'intensité.</li>
-      <li><strong>Efficacité (30 %)</strong> — puissance, compatibilité avec les types de poils, résultats observés dans la durée.</li>
-      <li><strong>Praticité (20 %)</strong> — taille de la fenêtre de flash, alimentation filaire/sans-fil, autonomie, ergonomie.</li>
-      <li><strong>Confort (15 %)</strong> — refroidissement, sensation à chaque flash, facilité de prise en main.</li>
+      <li><strong>Les caractéristiques officielles</strong> communiquées par les fabricants (technologie, capteur de teint, alimentation, compatibilité peau/poil, nombre de flashs…).</li>
+      <li><strong>Les avis et retours d'utilisateurs</strong> disponibles publiquement (marchands, forums, sites spécialisés), ainsi que la réputation générale de chaque modèle.</li>
     </ul>
     <p>
-      La note finale sur 10 synthétise ces critères. Nos classements sont
-      <strong>strictement éditoriaux</strong> : ils ne sont jamais influencés par
-      les liens d'affiliation.
+      À partir de ces éléments, nous comparons les appareils selon les critères qui
+      nous semblent les plus importants — <strong>sécurité</strong> (capteur de
+      teint, compatibilité des phototypes), <strong>efficacité</strong> annoncée,
+      <strong>praticité</strong> (filaire/sans-fil, ergonomie) et
+      <strong>confort</strong> (refroidissement, niveaux d'intensité) — puis nous
+      attribuons une <strong>note éditoriale sur 10</strong>. Cette note traduit
+      notre <strong>opinion</strong> issue de cette analyse documentaire : elle est
+      subjective et n'a pas valeur de test scientifique. Rien ne remplace la notice
+      du fabricant et vos propres besoins.
+    </p>
+    <p>
+      Nos classements sont <strong>strictement éditoriaux</strong> : ils ne sont
+      jamais influencés par les liens d'affiliation.
     </p>
 
     <h2>Notre indépendance et notre financement</h2>
@@ -66,10 +78,13 @@ const schema = {
       réalisons un bénéfice sur les achats remplissant les conditions requises.
     </p>
     <p>
-      Cette rémunération ne modifie <strong>jamais</strong> nos évaluations. Un
-      produit mal noté le reste, qu'il génère ou non des commissions. Tous nos
-      liens affiliés sont signalés en <code>rel="nofollow sponsored"</code> et une
-      divulgation est présente sur chaque page.
+      Cette rémunération ne modifie <strong>jamais</strong> notre classement.
+      Comme <strong>tous nos liens pointent vers Amazon avec la même commission</strong>,
+      nous n'avons aucun intérêt financier à mettre un produit en avant plutôt
+      qu'un autre. Un produit moins bien noté le reste, qu'il génère ou non des
+      commissions. Tous nos liens affiliés sont signalés en
+      <code>rel="nofollow sponsored"</code> et une divulgation est présente sur
+      chaque page.
     </p>
 
     <h2>Une précision importante sur les prix</h2>
