@@ -43,7 +43,7 @@ const alim: Record<string, string> = {
             </td>
             <td><Rating note={d.note} /></td>
             <td>{d.technologie}</td>
-            <td>{d.nbFlashs.toLocaleString('fr-FR')}</td>
+            <td>{d.nbFlashs ? d.nbFlashs.toLocaleString('fr-FR') : '—'}</td>
             <td>{d.capteurDePeau ? '✅ Oui' : '—'}</td>
             <td>{alim[d.alimentation]}</td>
             <td class="small">{d.compatibilitePeau}</td>

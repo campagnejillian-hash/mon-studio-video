@@ -12,7 +12,9 @@ const produits = defineCollection({
       nom: z.string(),
       marque: z.string(),
       technologie: z.string(), // ex : « Lumière pulsée intense (IPL) »
-      nbFlashs: z.number().int().positive(), // nombre de flashs annoncé
+      // Nombre de flashs annoncé. Optionnel : toutes les marques ne le
+      // communiquent pas — on n'invente jamais de valeur.
+      nbFlashs: z.number().int().positive().optional(),
       zones: z.array(z.string()), // zones traitables
       capteurDePeau: z.boolean(), // capteur de teint intégré ?
       alimentation: z.enum(['filaire', 'sans-fil', 'filaire-et-sans-fil']),
